@@ -11,10 +11,9 @@ import {
   SafeAreaView,
   StyleSheet,
   ScrollView,
-  View,
-  Text,
   StatusBar,
-  Image
+  Image,
+  Linking,
 } from 'react-native';
 
 import {
@@ -24,104 +23,88 @@ import {
   DebugInstructions,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import {View, Text} from 'react-native-picasso';
+import {
+  Card,
+  CardTitle,
+  CardContent,
+  CardAction,
+  CardButton,
+  CardImage,
+} from 'react-native-material-cards';
 
-export default class App extends React.Component{
-
-  constructor(props){
+export default class App extends React.Component {
+  constructor(props) {
     super(props);
 
-    this.state={
+    this.state = {
       loading: false,
-      data:[],
-      url:'http://ws.audioscrobbler.com/2.0/?method=geo.gettopartists&country=spain&api_key=829751643419a7128b7ada50de590067&format=json'
-
-    }
+      data: [],
+      url:
+        'http://ws.audioscrobbler.com/2.0/?method=geo.gettopartists&country=spain&api_key=829751643419a7128b7ada50de590067&format=json',
+    };
   }
 
-  componentDidMount(){
+  componentDidMount() {
     this.getData();
   }
 
-  getData=()=>{
-
-    this.setState({loading:true})
+  getData = () => {
+    this.setState({loading: true});
 
     fetch(this.state.url)
-    .then(res=>res.json())
-    .then( res=> {
+      .then((res) => res.json())
+      .then((res) => {
+        this.setState({
+          data: res.topartists.artist,
+          loading: false,
+        });
+      });
+  };
 
-      this.setState({
-        data: res.topartists.artist,
-        loading:false
-      })
-
-    });
-  }
-
-  render(){
+  render() {
     return (
-            <View>
-    <ScrollView>
-        {this.state.data.map(item=>(
-          
-         /*  <View>
-            <Image source={{uri: item.image}}/>
-          </View> */
-          <View>
-            <Text>{item.name}</Text>
-            <Text>{item.listeners}</Text>
-            <Text>{item.mbid}</Text>
-            <Text>{item.url}</Text>
-            <Text>{item.streamable}</Text>
-            <Image style={{width:50, height:50}} source={{uri:'https://lastfm.freetls.fastly.net/i/u/64s/2a96cbd8b46e442fc41c2b86b821562f.png'}}/>
-          </View>
-     
-        ))}
-    </ScrollView>
-
+      <View>
+        <ScrollView>
+          {this.state.data.map((item) => (
+            <View className="m-sm">
+              <Card>
+                <CardImage
+                  source={{
+                    uri:
+                      'https://lastfm.freetls.fastly.net/i/u/64s/2a96cbd8b46e442fc41c2b86b821562f.png',
+                  }}
+                  title="Top Artistas"
+                />
+                <CardTitle
+                  title={item.name}
+                  subtitle={'oyentes: ' + item.listeners + ' personas'}
+                />
+                <CardContent>
+                  <Text className="mt-sm">{'MBID: ' + item.mbid}</Text>
+                  <Text className="mt-sm">{'streamable: ' + item.streamable}</Text>
+                  <Text className="mt-sm">
+                    para saber mas del artista presiona el siguiente boton:
+                  </Text>
+                </CardContent>
+                <CardAction separator={true} inColumn={false}>
+                  <CardButton
+                    onPress={() => Linking.openURL(item.url)}
+                    title="ver"
+                    color="blue"
+                  />
+                </CardAction>
+              </Card>
+            </View>
+          ))}
+        </ScrollView>
       </View>
     );
   }
-
-};
+}
 
 const styles = StyleSheet.create({
   scrollView: {
     backgroundColor: Colors.lighter,
   },
-  engine: {
-    position: 'absolute',
-    right: 0,
-  },
-  body: {
-    backgroundColor: Colors.white,
-  },
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: Colors.black,
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-    color: Colors.dark,
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-  footer: {
-    color: Colors.dark,
-    fontSize: 12,
-    fontWeight: '600',
-    padding: 4,
-    paddingRight: 12,
-    textAlign: 'right',
-  },
 });
-
-
