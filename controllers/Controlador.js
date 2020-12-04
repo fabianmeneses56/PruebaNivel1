@@ -20,15 +20,14 @@ export default class Controlador extends Component {
     this.state = {
       loading: false,
       data: [],
-      url:
-        'http://ws.audioscrobbler.com/2.0/?method=geo.gettopartists&country=spain&api_key=829751643419a7128b7ada50de590067&format=json',
+      url:'http://ws.audioscrobbler.com/2.0/?method=geo.gettopartists&country=spain&api_key=829751643419a7128b7ada50de590067&format=json&limit=10&page=2',
     };
   }
   componentDidMount() {
     this.getData();
   }
 
-  getData = () => {
+  getData = async () => {
     this.setState({loading: true});
 
     fetch(this.state.url)
@@ -45,7 +44,7 @@ export default class Controlador extends Component {
     return (
       <View>
         {this.state.data.map((item) => (
-          <View className="m-sm">
+          <View key={item.name} className="m-sm">
             <Card>
               <CardImage
                 source={{
